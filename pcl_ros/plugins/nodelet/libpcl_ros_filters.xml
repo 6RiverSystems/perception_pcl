@@ -12,6 +12,12 @@
     </description>
   </class>
 
+  <class name="srs/gpu/VoxelGrid" type="pcl_ros::gpu::VoxelGrid" base_class_type="nodelet::Nodelet">
+    <description>
+      VoxelGrid assembles a local 3D grid over a given PointCloud, and uses that to downsample the data.
+    </description>
+  </class>
+
   <class name="pcl/ProjectInliers" type="ProjectInliers" base_class_type="nodelet::Nodelet">
     <description>
       ProjectInliers uses a model and a set of inlier indices from a PointCloud to project them into a separate PointCloud.

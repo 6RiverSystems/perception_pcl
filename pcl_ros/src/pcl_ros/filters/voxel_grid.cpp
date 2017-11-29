@@ -37,6 +37,7 @@
 
 #include <pluginlib/class_list_macros.h>
 #include "pcl_ros/filters/voxel_grid.h"
+#include <boost/timer/timer.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
@@ -57,6 +58,12 @@ pcl_ros::VoxelGrid::filter (const PointCloud2::ConstPtr &input,
                             const IndicesPtr &indices, 
                             PointCloud2 &output)
 {
+  using boost::timer::cpu_timer;
+  using boost::timer::cpu_times;
+  using boost::timer::nanosecond_type;
+  nanosecond_type last(0);
+  cpu_timer timer;
+
   boost::mutex::scoped_lock lock (mutex_);
   pcl::PCLPointCloud2::Ptr pcl_input(new pcl::PCLPointCloud2);
   pcl_conversions::toPCL (*(input), *(pcl_input));
@@ -65,6 +72,12 @@ pcl_ros::VoxelGrid::filter (const PointCloud2::ConstPtr &input,
   pcl::PCLPointCloud2 pcl_output;
   impl_.filter (pcl_output);
   pcl_conversions::moveFromPCL(pcl_output, output);
+
+  cpu_times const elapsed_times(timer.elapsed());
+  nanosecond_type const elapsed(elapsed_times.system
+                                + elapsed_times.user);
+
+  ROS_INFO("voxel_grid processing took: %ld nanoseconds.", elapsed);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

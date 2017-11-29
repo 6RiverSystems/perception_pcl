@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2009, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,83 +31,62 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: radius_outlier_removal.h 35876 2011-02-09 01:04:36Z rusu $
+ * $Id: voxel_grid.h 35876 2011-02-09 01:04:36Z rusu $
  *
  */
 
-#ifndef PCL_ROS_FILTERS_RADIUSOUTLIERREMOVAL_H_
-#define PCL_ROS_FILTERS_RADIUSOUTLIERREMOVAL_H_
+#ifndef PCL_ROS_FILTERS_GPU_VOXEL_H_
+#define PCL_ROS_FILTERS_GPU_VOXEL_H_
 
 // PCL includes
-#include <pcl/filters/radius_outlier_removal.h>
+#include <sixriver/gpu/filters/voxel_grid.h>
 #include "pcl_ros/filters/filter.h"
 
 // Dynamic reconfigure
-#include "pcl_ros/RadiusOutlierRemovalConfig.h"
-#include <boost/timer/timer.hpp>
+#include "pcl_ros/VoxelGridConfig.h"
 
 namespace pcl_ros
 {
-  /** \brief @b RadiusOutlierRemoval is a simple filter that removes outliers if the number of neighbors in a certain
-    * search radius is smaller than a given K.
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
+    namespace gpu
+    {
+  /** \brief @b VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     * \author Radu Bogdan Rusu
     */
-  class RadiusOutlierRemoval : public Filter
+  class VoxelGrid : public pcl_ros::Filter
   {
     protected:
       /** \brief Pointer to a dynamic reconfigure service. */
-      boost::shared_ptr <dynamic_reconfigure::Server<pcl_ros::RadiusOutlierRemovalConfig> > srv_;
+      boost::shared_ptr <dynamic_reconfigure::Server<pcl_ros::VoxelGridConfig> > srv_;
+
+      /** \brief The PCL filter implementation used. */
+      sixriver::VoxelGrid<pcl::PCLPointCloud2> impl_;
 
       /** \brief Call the actual filter. 
         * \param input the input point cloud dataset
         * \param indices the input set of indices to use from \a input
         * \param output the resultant filtered dataset
         */
-      inline void
+      virtual void
       filter (const PointCloud2::ConstPtr &input, const IndicesPtr &indices, 
-              PointCloud2 &output)
-      {
-          using boost::timer::cpu_timer;
-          using boost::timer::cpu_times;
-          using boost::timer::nanosecond_type;
-          nanosecond_type last(0);
-          cpu_timer timer;
-
-          pcl::PCLPointCloud2::Ptr pcl_input(new pcl::PCLPointCloud2);
-        pcl_conversions::toPCL (*(input), *(pcl_input));
-        impl_.setInputCloud (pcl_input);
-        impl_.setIndices (indices);
-        pcl::PCLPointCloud2 pcl_output;
-        impl_.filter (pcl_output);
-        pcl_conversions::moveFromPCL(pcl_output, output);
-
-          cpu_times const elapsed_times(timer.elapsed());
-          nanosecond_type const elapsed(elapsed_times.system
-                                        + elapsed_times.user);
-
-          ROS_INFO("radius outlier removal processing took: %ld nanoseconds.", elapsed);
-      }
+              PointCloud2 &output);
 
       /** \brief Child initialization routine.
         * \param nh ROS node handle
         * \param has_service set to true if the child has a Dynamic Reconfigure service
         */
-    virtual inline bool child_init (ros::NodeHandle &nh, bool &has_service);
+      bool 
+      child_init (ros::NodeHandle &nh, bool &has_service);
 
       /** \brief Dynamic reconfigure callback
         * \param config the config object
         * \param level the dynamic reconfigure level
         */
-      void config_callback (pcl_ros::RadiusOutlierRemovalConfig &config, uint32_t level);
-
-    
-    private:
-      /** \brief The PCL filter implementation used. */
-      pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2> impl_;
+      void 
+      config_callback (pcl_ros::VoxelGridConfig &config, uint32_t level);
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
+}
 
-#endif  //#ifndef PCL_FILTERS_RADIUSOUTLIERREMOVAL_H_
+#endif  //#ifndef PCL_ROS_FILTERS_VOXEL_H_
