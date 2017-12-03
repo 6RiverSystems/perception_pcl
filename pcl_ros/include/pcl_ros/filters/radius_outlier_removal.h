@@ -44,7 +44,7 @@
 
 // Dynamic reconfigure
 #include "pcl_ros/RadiusOutlierRemovalConfig.h"
-#include <boost/timer/timer.hpp>
+#include <chrono>
 
 namespace pcl_ros
 {
@@ -68,11 +68,8 @@ namespace pcl_ros
       filter (const PointCloud2::ConstPtr &input, const IndicesPtr &indices, 
               PointCloud2 &output)
       {
-          using boost::timer::cpu_timer;
-          using boost::timer::cpu_times;
-          using boost::timer::nanosecond_type;
-          nanosecond_type last(0);
-          cpu_timer timer;
+          auto start = std::chrono::system_clock::now();
+
 
           pcl::PCLPointCloud2::Ptr pcl_input(new pcl::PCLPointCloud2);
         pcl_conversions::toPCL (*(input), *(pcl_input));
@@ -82,11 +79,11 @@ namespace pcl_ros
         impl_.filter (pcl_output);
         pcl_conversions::moveFromPCL(pcl_output, output);
 
-          cpu_times const elapsed_times(timer.elapsed());
-          nanosecond_type const elapsed(elapsed_times.system
-                                        + elapsed_times.user);
+          auto end = std::chrono::system_clock::now();
+          std::chrono::duration<double> total_time = end - start;
 
-          ROS_INFO("radius outlier removal processing took: %ld nanoseconds.", elapsed);
+
+          ROS_ERROR_THROTTLE(10, "radius outlier removal processing took: %f seconds.", total_time.count());
       }
 
       /** \brief Child initialization routine.

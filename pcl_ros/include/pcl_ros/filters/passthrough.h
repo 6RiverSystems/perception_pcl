@@ -41,7 +41,7 @@
 // PCL includes
 #include <pcl/filters/passthrough.h>
 #include "pcl_ros/filters/filter.h"
-#include <boost/timer/timer.hpp>
+#include <chrono>
 
 namespace pcl_ros
 {
@@ -64,11 +64,8 @@ namespace pcl_ros
       filter (const PointCloud2::ConstPtr &input, const IndicesPtr &indices, 
               PointCloud2 &output)
       {
-          using boost::timer::cpu_timer;
-          using boost::timer::cpu_times;
-          using boost::timer::nanosecond_type;
-          nanosecond_type last(0);
-          cpu_timer timer;
+
+          auto start = std::chrono::system_clock::now();
 
         boost::mutex::scoped_lock lock (mutex_);
         pcl::PCLPointCloud2::Ptr pcl_input(new pcl::PCLPointCloud2);
@@ -79,12 +76,11 @@ namespace pcl_ros
         impl_.filter (pcl_output);
         pcl_conversions::moveFromPCL(pcl_output, output);
 
+          auto end = std::chrono::system_clock::now();
+          std::chrono::duration<double> total_time = end - start;
 
-          cpu_times const elapsed_times(timer.elapsed());
-          nanosecond_type const elapsed(elapsed_times.system
-                                        + elapsed_times.user);
 
-          ROS_INFO("passthrough processing took: %ld nanoseconds.", elapsed);
+          ROS_INFO_THROTTLE(10, "passthrough processing took: %f seconds.", total_time.count());
       }
 
       /** \brief Child initialization routine.

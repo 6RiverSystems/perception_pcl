@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 project(pcl_ros)
-
+add_compile_options(-std=c++11)
 ## Find system dependencies
 find_package(cmake_modules REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system filesystem thread)
+find_package(Boost REQUIRED COMPONENTS system filesystem thread timer)
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED QUIET)
 
@@ -51,8 +51,8 @@ generate_dynamic_reconfigure_options(
   cfg/SegmentDifferences.cfg
   cfg/StatisticalOutlierRemoval.cfg
   cfg/RadiusOutlierRemoval.cfg
-  cfg/VoxelGrid.cfg
-  cfg/CropBox.cfg
+  cfg/VoxelGrid.cfg cfg/CropBox.cfg
+
 )
 
 ## Declare the catkin package
@@ -130,7 +130,7 @@ add_library(pcl_ros_filters
         src/pcl_ros/filters/gpu/voxel_grid.cpp
         src/sixriver/gpu/filters/voxel_filter.cpp)
 target_link_libraries(pcl_ros_filters pcl_ros_tf ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${Eigen3_LIBRARIES} ${PCL_LIBRARIES})
-add_dependencies(pcl_ros_filters ${PROJECT_NAME}_gencfg)
+add_dependencies(pcl_ros_filters ${Boost_LIBRARIES} ${PROJECT_NAME}_gencfg)
 class_loader_hide_library_symbols(pcl_ros_filters)
 
 ## Declare the pcl_ros_segmentation library

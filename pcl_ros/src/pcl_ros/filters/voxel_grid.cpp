@@ -37,7 +37,7 @@
 
 #include <pluginlib/class_list_macros.h>
 #include "pcl_ros/filters/voxel_grid.h"
-#include <boost/timer/timer.hpp>
+#include <chrono>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
@@ -58,26 +58,45 @@ pcl_ros::VoxelGrid::filter (const PointCloud2::ConstPtr &input,
                             const IndicesPtr &indices, 
                             PointCloud2 &output)
 {
-  using boost::timer::cpu_timer;
-  using boost::timer::cpu_times;
-  using boost::timer::nanosecond_type;
-  nanosecond_type last(0);
-  cpu_timer timer;
+  auto start = std::chrono::system_clock::now();
 
   boost::mutex::scoped_lock lock (mutex_);
+  auto lock_end_time = std::chrono::system_clock::now();
+
   pcl::PCLPointCloud2::Ptr pcl_input(new pcl::PCLPointCloud2);
+  auto pcl_input_created = std::chrono::system_clock::now();
+
   pcl_conversions::toPCL (*(input), *(pcl_input));
+  auto pcl_converted = std::chrono::system_clock::now();
+
   impl_.setInputCloud (pcl_input);
+  auto impl_input_set = std::chrono::system_clock::now();
+
   impl_.setIndices (indices);
+  auto impl_indices_set = std::chrono::system_clock::now();
+
   pcl::PCLPointCloud2 pcl_output;
   impl_.filter (pcl_output);
+  auto filter_applied = std::chrono::system_clock::now();
+
   pcl_conversions::moveFromPCL(pcl_output, output);
+  auto end = std::chrono::system_clock::now();
 
-  cpu_times const elapsed_times(timer.elapsed());
-  nanosecond_type const elapsed(elapsed_times.system
-                                + elapsed_times.user);
+  std::chrono::duration<double> total_time = end - start;
+  std::chrono::duration<double> lock_time = lock_end_time - start;
+  std::chrono::duration<double> input_creation_time = pcl_input_created - lock_end_time;
+  std::chrono::duration<double> input_conversion_time = pcl_converted - pcl_input_created;
+  std::chrono::duration<double> impl_input_set_time = impl_input_set - pcl_converted;
+  std::chrono::duration<double> indices_time = impl_indices_set - impl_input_set;
+  std::chrono::duration<double> filter_time = filter_applied - impl_indices_set;
+  std::chrono::duration<double> output_conversion_time = end - filter_applied;
 
-  ROS_INFO("voxel_grid processing took: %ld nanoseconds.", elapsed);
+
+  ROS_INFO_THROTTLE(10, "voxel_grid processing took: %f seconds. lock acquisition took: %f seconds"
+                   ", input creation took: %f seconds, input conversion took %f seconds, "
+  "setting input took %f seconds, indices took %f seconds, filter took %f seconds, output conversion took %f seconds",
+  total_time.count(), lock_time.count(), input_conversion_time.count(), input_conversion_time.count(),
+  impl_input_set_time.count(), indices_time.count(), filter_time.count(), output_conversion_time.count());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

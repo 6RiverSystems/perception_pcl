@@ -37,7 +37,7 @@
 
 #include <pluginlib/class_list_macros.h>
 #include "pcl_ros/filters/radius_outlier_removal.h"
-
+//
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl_ros::RadiusOutlierRemoval::child_init (ros::NodeHandle &nh, bool &has_service)
