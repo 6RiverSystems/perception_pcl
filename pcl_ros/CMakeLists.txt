@@ -128,7 +128,14 @@ add_library(pcl_ros_filters
   src/pcl_ros/filters/voxel_grid.cpp
   src/pcl_ros/filters/crop_box.cpp
         src/pcl_ros/filters/gpu/voxel_grid.cpp
-        src/sixriver/gpu/filters/voxel_filter.cpp)
+        src/sixriver/gpu/filters/voxel_filter.cpp
+        src/pcl_ros/filters/gpu/radius_outlier_removal.cpp
+        src/sixriver/gpu/filters/radius_outlier_removal.cpp
+        src/sixriver/gpu/search/brute_force.cpp
+        src/sixriver/gpu/search/kdtree.cpp
+        src/sixriver/gpu/search/octree.cpp
+        src/sixriver/gpu/search/organized.cpp
+        src/sixriver/gpu/search/search.cpp)
 target_link_libraries(pcl_ros_filters pcl_ros_tf ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${Eigen3_LIBRARIES} ${PCL_LIBRARIES})
 add_dependencies(pcl_ros_filters ${Boost_LIBRARIES} ${PROJECT_NAME}_gencfg)
 class_loader_hide_library_symbols(pcl_ros_filters)

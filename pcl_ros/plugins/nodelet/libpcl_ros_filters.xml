@@ -41,6 +41,12 @@
     </description>
   </class>
 
+  <class name="srs/gpu/RadiusOutlierRemoval" type="pcl_ros::gpu::RadiusOutlierRemoval" base_class_type="nodelet::Nodelet">
+    <description>
+      RadiusOutlierRemoval uses point neighborhood statistics to filter outlier data.
+    </description>
+  </class>
+
   <class name="pcl/CropBox" type="CropBox" base_class_type="nodelet::Nodelet">
     <description>
       CropBox is a filter that allows the user to filter all the data inside of a given box.
