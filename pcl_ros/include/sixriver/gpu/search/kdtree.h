@@ -41,7 +41,7 @@
 #define SIXRIVER_GPU_SEARCH_KDTREE_H_
 
 #include <sixriver/gpu/search/search.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <sixriver/gpu/kdtree/kdtree_flann.h>
 
 namespace pcl {
     // Forward declarations
@@ -62,7 +62,7 @@ namespace sixriver
       * \author Radu B. Rusu
       * \ingroup search
       */
-    template<typename PointT, class Tree = pcl::KdTreeFLANN<PointT> >
+    template<typename PointT, class Tree = sixriver::KdTreeFLANN<PointT> >
     class KdTree: public Search<PointT>
     {
       public:
