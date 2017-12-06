@@ -3,7 +3,7 @@ project(pcl_ros)
 add_compile_options(-std=c++11)
 ## Find system dependencies
 find_package(cmake_modules REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system filesystem thread timer)
+find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED QUIET)
 
