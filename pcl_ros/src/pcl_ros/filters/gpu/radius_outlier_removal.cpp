@@ -36,11 +36,11 @@
  */
 
 #include <pluginlib/class_list_macros.h>
-#include "pcl_ros/filters/radius_outlier_removal.h"
+#include "pcl_ros/filters/gpu/radius_outlier_removal.h"
 //
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl_ros::RadiusOutlierRemoval::child_init (ros::NodeHandle &nh, bool &has_service)
+pcl_ros::gpu::RadiusOutlierRemoval::child_init (ros::NodeHandle &nh, bool &has_service)
 {
   // Enable the dynamic reconfigure service
   has_service = true;
@@ -53,7 +53,7 @@ pcl_ros::RadiusOutlierRemoval::child_init (ros::NodeHandle &nh, bool &has_servic
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl_ros::RadiusOutlierRemoval::config_callback (pcl_ros::RadiusOutlierRemovalConfig &config, uint32_t level)
+pcl_ros::gpu::RadiusOutlierRemoval::config_callback (pcl_ros::RadiusOutlierRemovalConfig &config, uint32_t level)
 {
   boost::mutex::scoped_lock lock (mutex_);
 
@@ -72,6 +72,5 @@ pcl_ros::RadiusOutlierRemoval::config_callback (pcl_ros::RadiusOutlierRemovalCon
 }
 
 
-typedef pcl_ros::RadiusOutlierRemoval RadiusOutlierRemoval;
-PLUGINLIB_EXPORT_CLASS(RadiusOutlierRemoval,nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS(pcl_ros::gpu::RadiusOutlierRemoval,nodelet::Nodelet);
 

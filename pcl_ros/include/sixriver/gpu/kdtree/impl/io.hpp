@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,47 +33,55 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: radius_outlier_removal.cpp 33319 2010-10-15 04:49:28Z rusu $
+ * $Id$
  *
  */
 
-#include <pluginlib/class_list_macros.h>
-#include "pcl_ros/filters/radius_outlier_removal.h"
-//
-//////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl_ros::RadiusOutlierRemoval::child_init (ros::NodeHandle &nh, bool &has_service)
-{
-  // Enable the dynamic reconfigure service
-  has_service = true;
-  srv_ = boost::make_shared <dynamic_reconfigure::Server<pcl_ros::RadiusOutlierRemovalConfig> > (nh);
-  dynamic_reconfigure::Server<pcl_ros::RadiusOutlierRemovalConfig>::CallbackType f = boost::bind (&RadiusOutlierRemoval::config_callback, this, _1, _2);
-  srv_->setCallback (f);
+#ifndef SIXRIVER_GPU_KDTREE_IO_IMPL_HPP_
+#define SIXRIVER_GPU_KDTREE_IO_IMPL_HPP_
 
-  return (true);
+#include <sixriver/gpu/kdtree/io.h>
+#include <sixriver/gpu/kdtree/kdtree_flann.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename Point1T, typename Point2T> void
+sixriver::getApproximateIndices (
+    const typename pcl::PointCloud<Point1T>::ConstPtr &cloud_in,
+    const typename pcl::PointCloud<Point2T>::ConstPtr &cloud_ref,
+    std::vector<int> &indices)
+{
+  pcl::KdTreeFLANN<Point2T> tree;
+  tree.setInputCloud (cloud_ref);
+
+  std::vector<int> nn_idx (1);
+  std::vector<float> nn_dists (1);
+  indices.resize (cloud_in->points.size ());
+  for (size_t i = 0; i < cloud_in->points.size (); ++i)
+  {
+    tree.nearestKSearchT ((*cloud_in)[i], 1, nn_idx, nn_dists);
+    indices[i] = nn_idx[0];
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl_ros::RadiusOutlierRemoval::config_callback (pcl_ros::RadiusOutlierRemovalConfig &config, uint32_t level)
+template <typename PointT> void
+sixriver::getApproximateIndices (
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud_ref,
+    std::vector<int> &indices)
 {
-  boost::mutex::scoped_lock lock (mutex_);
+  pcl::KdTreeFLANN<PointT> tree;
+  tree.setInputCloud (cloud_ref);
 
-  if (impl_.getMinNeighborsInRadius () != config.min_neighbors)
+  std::vector<int> nn_idx (1);
+  std::vector<float> nn_dists (1);
+  indices.resize (cloud_in->points.size ());
+  for (size_t i = 0; i < cloud_in->points.size (); ++i)
   {
-    impl_.setMinNeighborsInRadius (config.min_neighbors);
-    NODELET_DEBUG ("[%s::config_callback] Setting the number of neighbors in radius: %d.", getName ().c_str (), config.min_neighbors);
+    tree.nearestKSearch (*cloud_in, i, 1, nn_idx, nn_dists);
+    indices[i] = nn_idx[0];
   }
-
-  if (impl_.getRadiusSearch () != config.radius_search)
-  {
-    impl_.setRadiusSearch (config.radius_search);
-    NODELET_DEBUG ("[%s::config_callback] Setting the radius to search neighbors: %f.", getName ().c_str (), config.radius_search);
-  }
-  
 }
 
-
-typedef pcl_ros::RadiusOutlierRemoval RadiusOutlierRemoval;
-PLUGINLIB_EXPORT_CLASS(RadiusOutlierRemoval,nodelet::Nodelet);
+#endif // PCL_KDTREE_IO_IMPL_H_
 

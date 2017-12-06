@@ -45,6 +45,7 @@
 
 // Dynamic reconfigure
 #include "pcl_ros/CropBoxConfig.h"
+#include <chrono>
 
 namespace pcl_ros
 {
