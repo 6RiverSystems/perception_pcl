@@ -58,8 +58,6 @@ pcl_ros::gpu::VoxelGrid::filter (const PointCloud2::ConstPtr &input,
                             const IndicesPtr &indices,
                             PointCloud2 &output)
 {
-    auto start = std::chrono::system_clock::now();
-
     boost::mutex::scoped_lock lock (mutex_);
     pcl::PCLPointCloud2::Ptr pcl_input(new pcl::PCLPointCloud2);
     pcl_conversions::toPCL (*(input), *(pcl_input));
@@ -68,15 +66,6 @@ pcl_ros::gpu::VoxelGrid::filter (const PointCloud2::ConstPtr &input,
     pcl::PCLPointCloud2 pcl_output;
     impl_.filter (pcl_output);
     pcl_conversions::moveFromPCL(pcl_output, output);
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> total_time = end - start;
-    ROS_INFO_THROTTLE(10, "gpu voxel_grid processing took: %f seconds.",
-                      total_time.count());
-    Eigen::Vector3f leaf_size = impl_.getLeafSize ();
-    ROS_INFO_THROTTLE(10, "gpu voxel grid leaf size: %f %f %f", leaf_size[0], leaf_size[1], leaf_size[2]);
-    double filter_min, filter_max;
-    impl_.getFilterLimits (filter_min, filter_max);
-    ROS_INFO_THROTTLE(10, "gpu voxel grid filter min %f filter max %f", filter_min, filter_max);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

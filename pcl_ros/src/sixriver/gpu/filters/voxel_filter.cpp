@@ -41,7 +41,6 @@
 #include <iostream>
 #include <pcl/common/io.h>
 #include <sixriver/gpu/filters/impl/voxel_grid.hpp>
-#include <sixriver/gpu/filters/gpu_min_max_3d.h>
 
 typedef Eigen::Array<size_t, 4, 1> Array4size_t;
 using pcl::PCLException;
@@ -217,23 +216,6 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
     Eigen::Vector4f min_p, max_p;
     // Get the minimum and maximum dimensions
-
-    // make a call to gpu implementation of getMinMax3D. Run on cpu if failed
-/*
-    if (!filter_field_name_.empty ()) { // If we don't want to process the entire cloud...
-        if (!sixriver::gpu::filters::getMinMax3D(input_, x_idx_, y_idx_, z_idx_, filter_field_name_,
-                                            static_cast<float> (filter_limit_min_),
-                                            static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_)) {
-            getMinMax3D(input_, x_idx_, y_idx_, z_idx_, filter_field_name_,
-                        static_cast<float> (filter_limit_min_),
-                        static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
-        }
-    } else {
-        if(!sixriver::gpu::filters::getMinMax3D(input_, x_idx_, y_idx_, z_idx_, min_p, max_p)){
-            getMinMax3D(input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
-        }
-    }
-*/
 
     if (!filter_field_name_.empty ()) { // If we don't want to process the entire cloud...
             getMinMax3D(input_, x_idx_, y_idx_, z_idx_, filter_field_name_,
