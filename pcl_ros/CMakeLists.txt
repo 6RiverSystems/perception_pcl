@@ -75,6 +75,7 @@ catkin_package(
     tf
   DEPENDS
     Boost
+    PCL
 )
 
 ## Declare the pcl_ros_tf library
