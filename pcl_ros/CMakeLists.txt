@@ -75,7 +75,6 @@ catkin_package(
     tf
   DEPENDS
     Boost
-    PCL
 )
 
 ## Declare the pcl_ros_tf library
@@ -188,17 +187,17 @@ target_link_libraries(convert_pointcloud_to_image ${Boost_LIBRARIES} ${catkin_LI
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest_gtest(test_tf_message_filter_pcl tests/test_tf_message_filter_pcl.launch src/test/test_tf_message_filter_pcl.cpp)
-  target_link_libraries(test_tf_message_filter_pcl ${catkin_LIBRARIES} ${GTEST_LIBRARIES})
+  target_link_libraries(test_tf_message_filter_pcl ${catkin_LIBRARIES} ${GTEST_LIBRARIES} ${PCL_LIBRARIES})
 
-  catkin_add_gtest(gpu_voxel_grid_tests src/test/test_filters.cpp)
-  add_dependencies(gpu_voxel_grid_tests pcl_ros_filters)
-  target_link_libraries(gpu_voxel_grid_tests ${catkin_LIBRARIES} ${srslib_framework_LIBRARIES} ${GTEST_LIBRARIES})
-  set(PCL_ADD_TEST_ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
-  if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
-    add_test(gpu_voxel_grid_tests gpu_voxel_grid_tests ${PCL_ADD_TEST_ARGUMENTS})
-  else(${CMAKE_VERSION} VERSION_LESS 2.8.4)
-    add_test(NAME gpu_voxel_grid_tests COMMAND gpu_voxel_grid_tests ${PCL_ADD_TEST_ARGUMENTS})
-  endif(${CMAKE_VERSION} VERSION_LESS 2.8.4)
+#  catkin_add_gtest(gpu_voxel_grid_tests src/test/test_filters.cpp)
+#  add_dependencies(gpu_voxel_grid_tests pcl_ros_filters)
+#  target_link_libraries(gpu_voxel_grid_tests ${catkin_LIBRARIES} ${srslib_framework_LIBRARIES} ${GTEST_LIBRARIES} ${PCL_LIBRARIES})
+#  set(PCL_ADD_TEST_ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
+#  if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
+#    add_test(gpu_voxel_grid_tests gpu_voxel_grid_tests ${PCL_ADD_TEST_ARGUMENTS})
+#  else(${CMAKE_VERSION} VERSION_LESS 2.8.4)
+#    add_test(NAME gpu_voxel_grid_tests COMMAND gpu_voxel_grid_tests ${PCL_ADD_TEST_ARGUMENTS})
+#  endif(${CMAKE_VERSION} VERSION_LESS 2.8.4)
 
 endif(CATKIN_ENABLE_TESTING)
 
