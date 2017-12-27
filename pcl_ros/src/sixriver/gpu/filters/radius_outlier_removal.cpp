@@ -38,6 +38,7 @@
  *
  */
 
+#define FLANN_USE_CUDA 1
 #include <sixriver/gpu/filters/impl/radius_outlier_removal.hpp>
 #include <pcl/conversions.h>
 

@@ -136,8 +136,8 @@ add_library(pcl_ros_filters
         src/sixriver/gpu/search/organized.cpp
         src/sixriver/gpu/search/search.cpp
         src/sixriver/gpu/kdtree/kdtree_flann.cpp)
-target_link_libraries(pcl_ros_filters pcl_ros_tf ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${Eigen3_LIBRARIES} ${PCL_LIBRARIES})
-add_dependencies(pcl_ros_filters ${Boost_LIBRARIES} ${PROJECT_NAME}_gencfg)
+target_link_libraries(pcl_ros_filters pcl_ros_tf ${Boost_LIBRARIES} ${catkin_LIBRARIES} ${Eigen3_LIBRARIES} ${PCL_LIBRARIES} /usr/lib/aarch64-linux-gnu/lib/libflann_cuda.so /usr/lib/aarch64-linux-gnu/lib/libflann_cuda.so /usr/lib/aarch64-linux-gnu/lib/libflann_cpp.so)
+add_dependencies(pcl_ros_filters ${Boost_LIBRARIES} ${PROJECT_NAME}_gencfg /usr/lib/aarch64-linux-gnu/lib/libflann_cuda.so /usr/lib/aarch64-linux-gnu/lib/libflann_cuda.so /usr/lib/aarch64-linux-gnu/lib/libflann_cpp.so)
 class_loader_hide_library_symbols(pcl_ros_filters)
 
 ## Declare the pcl_ros_segmentation library

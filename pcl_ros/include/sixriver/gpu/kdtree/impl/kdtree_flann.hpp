@@ -40,6 +40,8 @@
 #define SIXRIVER_GPU_KDTREE_KDTREE_IMPL_FLANN_H_
 
 #include <cstdio>
+#define FLANN_USE_CUDA
+#include <flann/flann.hpp>
 #include <sixriver/gpu/kdtree/kdtree_flann.h>
 #include <sixriver/gpu/kdtree/flann.h>
 #include <pcl/console/print.h>
@@ -123,7 +125,7 @@ sixriver::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cl
   flann_index_.reset (new FLANNIndex (::flann::Matrix<float> (cloud_.get (), 
                                                               index_mapping_.size (), 
                                                               dim_),
-                                      ::flann::KDTreeSingleIndexParams (15))); // max 15 points/leaf
+                                      ::flann::KDTreeCuda3dIndexParams (64))); // max 64 points/leaf
   flann_index_->buildIndex ();
 }
 
