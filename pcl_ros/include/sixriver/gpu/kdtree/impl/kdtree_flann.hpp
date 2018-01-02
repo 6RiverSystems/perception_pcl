@@ -125,7 +125,7 @@ sixriver::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cl
   flann_index_.reset (new FLANNIndex (::flann::Matrix<float> (cloud_.get (), 
                                                               index_mapping_.size (), 
                                                               dim_),
-                                      ::flann::KDTreeCuda3dIndexParams (64))); // max 64 points/leaf
+                                      ::flann::KDTreeSingleIndexParams (64))); // max 64 points/leaf
   flann_index_->buildIndex ();
 }
 

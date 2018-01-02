@@ -41,7 +41,10 @@
 #define SIXRIVER_GPU_FILTERS_RADIUS_OUTLIER_REMOVAL_H_
 
 #include <pcl/filters/filter_indices.h>
-#include <pcl/search/pcl_search.h>
+#include <sixriver/gpu/search/search.h>
+#include <sixriver/gpu/search/organized.h>
+#include <sixriver/gpu/search/kdtree.h>
+
 
 namespace sixriver
 {
@@ -75,7 +78,7 @@ namespace sixriver
       typedef typename pcl::FilterIndices<PointT>::PointCloud PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
+      typedef typename sixriver::search::Search<PointT>::Ptr SearcherPtr;
 
     public:
 
@@ -198,8 +201,8 @@ namespace sixriver
     using pcl::Filter<pcl::PCLPointCloud2>::removed_indices_;
     using pcl::Filter<pcl::PCLPointCloud2>::extract_removed_indices_;
 
-    typedef pcl::search::Search<pcl::PointXYZ> KdTree;
-    typedef pcl::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
+    typedef sixriver::search::Search<pcl::PointXYZ> KdTree;
+    typedef sixriver::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
 
     typedef pcl::PCLPointCloud2 PCLPointCloud2;
     typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;

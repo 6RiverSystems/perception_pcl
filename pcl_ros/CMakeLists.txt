@@ -6,6 +6,7 @@ find_package(cmake_modules REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED QUIET)
+find_package(flann 1.9)
 
 if(NOT "${PCL_LIBRARIES}" STREQUAL "")
   list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
@@ -75,6 +76,7 @@ catkin_package(
     tf
   DEPENDS
     Boost
+    flann 
 )
 
 ## Declare the pcl_ros_tf library
