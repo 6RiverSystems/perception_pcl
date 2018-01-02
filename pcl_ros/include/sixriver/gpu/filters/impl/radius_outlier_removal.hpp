@@ -84,9 +84,9 @@ sixriver::RadiusOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &in
   if (!searcher_)
   {
     if (input_->isOrganized ())
-      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
+      searcher_.reset (new sixriver::search::OrganizedNeighbor<PointT> ());
     else
-      searcher_.reset (new pcl::search::KdTree<PointT> (false));
+      searcher_.reset (new sixriver::search::KdTree<PointT> (false));
   }
   searcher_->setInputCloud (input_);
 

@@ -39,6 +39,11 @@
  */
 
 #include <sixriver/gpu/filters/impl/radius_outlier_removal.hpp>
+#include <sixriver/gpu/search/search.h>
+#include <sixriver/gpu/search/organized.h>
+#include <sixriver/gpu/search/kdtree.h>
+
+
 #include <pcl/conversions.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -70,9 +75,9 @@ sixriver::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   if (!tree_)
   {
     if (cloud->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
+      tree_.reset (new sixriver::search::OrganizedNeighbor<pcl::PointXYZ> ());
     else
-      tree_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+      tree_.reset (new sixriver::search::KdTree<pcl::PointXYZ> (false));
   }
   tree_->setInputCloud (cloud);
 
