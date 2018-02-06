@@ -72,9 +72,9 @@ sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int 
     for (size_t cp = 0; cp < nr_points; ++cp)
     {
         // Unoptimized memcpys: assume fields x, y, z are in random order
-        memcpy (&pt[0], &cloud->data[xyz_offset[0]], sizeof (float));
-        memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
-        memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
+        pt[0] = *reinterpret_cast<const float *>(&cloud->data[xyz_offset[0]]);
+        pt[1] = *reinterpret_cast<const float *>(&cloud->data[xyz_offset[1]]);
+        pt[2] = *reinterpret_cast<const float *>(&cloud->data[xyz_offset[2]]);
         // Check if the point is invalid
         if (!pcl_isfinite (pt[0]) ||
             !pcl_isfinite (pt[1]) ||
@@ -155,9 +155,9 @@ sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int 
         }
 
         // Unoptimized memcpys: assume fields x, y, z are in random order
-        memcpy (&pt[0], &cloud->data[xyz_offset[0]], sizeof (float));
-        memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
-        memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
+        pt[0] = *reinterpret_cast<const float *>(&cloud->data[xyz_offset[0]]);
+        pt[1] = *reinterpret_cast<const float *>(&cloud->data[xyz_offset[1]]);
+        pt[2] = *reinterpret_cast<const float *>(&cloud->data[xyz_offset[2]]);
         // Check if the point is invalid
         if (!pcl_isfinite (pt[0]) ||
             !pcl_isfinite (pt[1]) ||
@@ -304,7 +304,7 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         {
             size_t point_offset = cp * input_->point_step;
             // Get the distance value
-            memcpy (&distance_value, &input_->data[point_offset + input_->fields[distance_idx].offset], sizeof (float));
+            distance_value = *reinterpret_cast<const float *>(&input_->data[point_offset + input_->fields[distance_idx].offset]);
 
             if (filter_limit_negative_)
             {
@@ -326,9 +326,9 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             }
 
             // Unoptimized memcpys: assume fields x, y, z are in random order
-            memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof (float));
-            memcpy (&pt[1], &input_->data[xyz_offset[1]], sizeof (float));
-            memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof (float));
+            pt[0] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[0]], sizeof (float));
+            pt[1] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[1]], sizeof (float));
+            pt[2] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[2]], sizeof (float));
 
             // Check if the point is invalid
             if (!pcl_isfinite (pt[0]) ||
@@ -356,9 +356,9 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         for (size_t cp = 0; cp < nr_points; ++cp)
         {
             // Unoptimized memcpys: assume fields x, y, z are in random order
-            memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof (float));
-            memcpy (&pt[1], &input_->data[xyz_offset[1]], sizeof (float));
-            memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof (float));
+            pt[0] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[0]]);
+            pt[1] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[1]]);
+            pt[2] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[2]]);
 
             // Check if the point is invalid
             if (!pcl_isfinite (pt[0]) ||
@@ -447,9 +447,10 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         // Do we need to process all the fields?
         if (!downsample_all_data_)
         {
-            memcpy (&pt[0], &input_->data[point_offset+input_->fields[x_idx_].offset], sizeof (float));
-            memcpy (&pt[1], &input_->data[point_offset+input_->fields[y_idx_].offset], sizeof (float));
-            memcpy (&pt[2], &input_->data[point_offset+input_->fields[z_idx_].offset], sizeof (float));
+            pt[0] = *reinterpret_cast<const float *>(&input_->data[point_offset+input_->fields[x_idx_].offset]);
+            pt[1] = *reinterpret_cast<const float *>(&input_->data[point_offset+input_->fields[y_idx_].offset]);
+            pt[2] = *reinterpret_cast<const float *>(&input_->data[point_offset+input_->fields[z_idx_].offset]);
+
             centroid[0] = pt[0];
             centroid[1] = pt[1];
             centroid[2] = pt[2];
@@ -479,9 +480,9 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             size_t point_offset = index_vector[i].cloud_point_index * input_->point_step;
             if (!downsample_all_data_)
             {
-                memcpy (&pt[0], &input_->data[point_offset+input_->fields[x_idx_].offset], sizeof (float));
-                memcpy (&pt[1], &input_->data[point_offset+input_->fields[y_idx_].offset], sizeof (float));
-                memcpy (&pt[2], &input_->data[point_offset+input_->fields[z_idx_].offset], sizeof (float));
+                pt[0] = *(reinterpret_cast<const float *>(&input_->data[point_offset+input_->fields[x_idx_].offset]));
+                pt[1] = *(reinterpret_cast<const float *>(&input_->data[point_offset+input_->fields[y_idx_].offset]));
+                pt[2] = *(reinterpret_cast<const float *>(&input_->data[point_offset+input_->fields[z_idx_].offset]));
                 centroid[0] += pt[0];
                 centroid[1] += pt[1];
                 centroid[2] += pt[2];
@@ -518,9 +519,9 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         if (!downsample_all_data_)
         {
             // Copy the data
-            memcpy (&output.data[xyz_offset[0]], &centroid[0], sizeof (float));
-            memcpy (&output.data[xyz_offset[1]], &centroid[1], sizeof (float));
-            memcpy (&output.data[xyz_offset[2]], &centroid[2], sizeof (float));
+            *reinterpret_cast<float *>(&output.data[xyz_offset[0]]) = centroid[0];
+            *reinterpret_cast<float *>(&output.data[xyz_offset[1]]) = centroid[1];
+            *reinterpret_cast<float *>(&output.data[xyz_offset[2]]) = centroid[2];
             xyz_offset += output.point_step;
         }
         else
@@ -536,7 +537,7 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             {
                 float r = centroid[centroid_size-4], g = centroid[centroid_size-3], b = centroid[centroid_size-2], a = centroid[centroid_size-1];
                 int rgb = (static_cast<int> (a) << 24) | (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
-                memcpy (&output.data[point_offset + output.fields[rgba_index].offset], &rgb, sizeof (float));
+                *reinterpret_cast<float *>(&output.data[point_offset + output.fields[rgba_index].offset]) = rgb;
             }
         }
         cp = i;
