@@ -326,9 +326,9 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             }
 
             // Unoptimized memcpys: assume fields x, y, z are in random order
-            pt[0] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[0]], sizeof (float));
-            pt[1] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[1]], sizeof (float));
-            pt[2] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[2]], sizeof (float));
+            pt[0] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[0]]);
+            pt[1] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[1]]);
+            pt[2] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[2]]);
 
             // Check if the point is invalid
             if (!pcl_isfinite (pt[0]) ||
