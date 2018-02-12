@@ -133,7 +133,7 @@ sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int 
         size_t point_offset = cp * cloud->point_step;
 
         // Get the distance value
-        memcpy (&distance_value, &cloud->data[point_offset + cloud->fields[distance_idx].offset], sizeof (float));
+        distance_value = *reinterpret_cast<const float *>(&cloud->data[point_offset + cloud->fields[distance_idx].offset]);
 
         if (limit_negative)
         {
