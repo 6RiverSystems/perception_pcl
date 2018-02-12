@@ -65,7 +65,7 @@ sixriver::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
         {
             // Get the distance value
             const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud->points[i]);
-            memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+            distance_value = *reinterpret_cast<const float *>(pt_data + fields[distance_idx].offset);
 
             if (limit_negative)
             {
@@ -91,7 +91,7 @@ sixriver::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
         {
             // Get the distance value
             const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud->points[i]);
-            memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+            distance_value = *reinterpret_cast<const float *>(pt_data + fields[distance_idx].offset);
 
             if (limit_negative)
             {
@@ -144,7 +144,7 @@ sixriver::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
         {
             // Get the distance value
             const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud->points[*it]);
-            memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+            distance_value = *reinterpret_cast<const float *>(pt_data + fields[distance_idx].offset);
 
             if (limit_negative)
             {
@@ -170,7 +170,7 @@ sixriver::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
         {
             // Get the distance value
             const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud->points[*it]);
-            memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+            distance_value = *reinterpret_cast<const float *>(pt_data + fields[distance_idx].offset);
 
             if (limit_negative)
             {
@@ -288,7 +288,7 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
             // Get the distance value
             const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[*it]);
             float distance_value = 0;
-            memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+            distance_value = *reinterpret_cast<const float *>(pt_data + fields[distance_idx].offset);
 
             if (filter_limit_negative_)
             {

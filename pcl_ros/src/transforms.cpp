@@ -180,11 +180,10 @@ transformPointCloud (const Eigen::Matrix4f &transform, const sensor_msgs::PointC
       pt_out[0] = std::numeric_limits<float>::quiet_NaN();
     }
 
-    memcpy (&out.data[xyz_offset[0]], &pt_out[0], sizeof (float));
-    memcpy (&out.data[xyz_offset[1]], &pt_out[1], sizeof (float));
-    memcpy (&out.data[xyz_offset[2]], &pt_out[2], sizeof (float));
-  
-    
+    *reinterpret_cast<float *>(&out.data[xyz_offset[0]]) = pt_out[0];
+    *reinterpret_cast<float *>(&out.data[xyz_offset[1]]) = pt_out[1];
+    *reinterpret_cast<float *>(&out.data[xyz_offset[2]]) = pt_out[2];
+
     xyz_offset += in.point_step;
   }
 
