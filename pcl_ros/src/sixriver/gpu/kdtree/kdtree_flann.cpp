@@ -35,7 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#define FLANN_USE_CUDA
 #include <sixriver/gpu/kdtree/impl/kdtree_flann.hpp>
 
 #ifndef PCL_NO_PRECOMPILE

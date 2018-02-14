@@ -42,6 +42,7 @@
   <depend>tf</depend>
   <depend>tf2_eigen</depend>
   <depend>libvtk-java</depend>
+  <depend>flann</depend>
   <!-- libproj-dev needed due to error in vtk6 -->
   <depend>proj</depend>
 
