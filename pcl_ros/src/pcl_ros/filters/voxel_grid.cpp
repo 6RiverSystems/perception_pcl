@@ -111,7 +111,7 @@ pcl_ros::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint32_t 
   {
     leaf_size.setConstant (config.leaf_size);
     NODELET_DEBUG ("[config_callback] Setting the downsampling leaf size to: %f.", leaf_size[0]);
-    impl_.setLeafSize (leaf_size[0], leaf_size[1], leaf_size[2]);
+    impl_.setLeafSize (leaf_size[0], leaf_size[1], 2);
   }
 
   double filter_min, filter_max;
