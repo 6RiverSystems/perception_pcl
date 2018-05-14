@@ -76,10 +76,15 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
 
     Eigen::Vector3f leaf_size = impl_.getLeafSize ();
 
-    if (leaf_size[0] != config.leaf_size)
+    if (leaf_size[0] != config.leaf_size && config.leaf_size_z == 0)
     {
         leaf_size.setConstant (config.leaf_size);
         NODELET_DEBUG ("[config_callback] Setting the downsampling leaf size to: %f.", leaf_size[0]);
+        impl_.setLeafSize (leaf_size[0], leaf_size[1], leaf_size[2]);
+    } else if (leaf_size[0] != config.leaf_size || (config.leaf_size_z > 0 && config.leaf_size_z != leaf_size[2])) {
+        leaf_size.setConstant (config.leaf_size);
+        leaf_size[2] = config.leaf_size_z;
+        NODELET_DEBUG ("[config_callback] Setting the downsampling leaf size to: %f, %f, %f.", leaf_size[0], leaf_size[1], leaf_size[2]);
         impl_.setLeafSize (leaf_size[0], leaf_size[1], leaf_size[2]);
     }
 
