@@ -77,30 +77,11 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
     //Eigen::Vector3f leaf_size = impl_.getLeafSize ();
     Eigen::Vector3f leaf_size;
 
-    if (config.leaf_size == 0 && config.leaf_size_x == 0 && config.leaf_size_y == 0 && config.leaf_size_z == 0)
+    if (config.leaf_size_x == 0 || config.leaf_size_y == 0 || config.leaf_size_z == 0)
     {
         NODELET_ERROR("[config_callback] All config leaf_size values are set to 0. Setting to 0.01");
         leaf_size = {0.01, 0.01, 0.01};
-    } else if (config.leaf_size == 0 && (config.leaf_size_x == 0 || config.leaf_size_y == 0 || config.leaf_size_z == 0))
-    {
-        NODELET_DEBUG("[config_callback] leaf_size value is set to 0 but leaf_size_x = %f, leaf_size_y = %f, leaf_size_z = %f. Setting the values that are missing set to 0.01", config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
-        leaf_size = {config.leaf_size_x == 0 ? 0.01 : config.leaf_size_x, config.leaf_size_y == 0 ? 0.01 : config.leaf_size_y, config.leaf_size_z == 0 ? 0.01 : config.leaf_size_z};
-    } else if (config.leaf_size != 0 && (config.leaf_size_x != 0 || config.leaf_size_y != 0 || config.leaf_size_z != 0))
-    {
-        NODELET_DEBUG("[config_callback] leaf_size value is set to %f but leaf_size_x = %f, leaf_size_y = %f, leaf_size_z = %f. Setting the values that are not set to leaf_size", config.leaf_size, config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
-        leaf_size = {config.leaf_size_x == 0 ? config.leaf_size : config.leaf_size_x, config.leaf_size_y == 0 ? config.leaf_size : config.leaf_size_y, config.leaf_size_z == 0 ? config.leaf_size : config.leaf_size_z};
-    } else if (leaf_size[0] != config.leaf_size && config.leaf_size_x == 0 && config.leaf_size_y == 0 && config.leaf_size_z == 0)
-    {
-        leaf_size.setConstant (config.leaf_size);
-        NODELET_DEBUG ("[config_callback] Setting the downsampling leaf size to: %f.", leaf_size[0]);
-    } else if (config.leaf_size == 0 && config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0)
-    {
-        leaf_size.setConstant (0);
-        leaf_size[0] = config.leaf_size_x;
-        leaf_size[1] = config.leaf_size_y;
-        leaf_size[2] = config.leaf_size_z;
-        NODELET_DEBUG ("[config_callback] Setting the downsampling leaf size to: %f, %f, %f.", leaf_size[0], leaf_size[1], leaf_size[2]);
-    } else if (config.leaf_size > 0 && config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0) {
+    } else if (config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0) {
         NODELET_WARN("pconfig_callback] All leaf values are set. Using the leaf_size_x, leaf_size_y, leaf_size_z values.");
         leaf_size.setConstant (0);
         leaf_size[0] = config.leaf_size_x;
