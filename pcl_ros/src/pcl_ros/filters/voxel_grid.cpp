@@ -108,13 +108,15 @@ pcl_ros::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint32_t 
   Eigen::Vector3f leaf_size;
 
 
-  if (config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0) {
+  if (config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0)
+  {
     NODELET_WARN("pconfig_callback] All leaf values are set. Using the leaf_size_x, leaf_size_y, leaf_size_z values.");
     leaf_size.setConstant (0);
     leaf_size[0] = config.leaf_size_x;
     leaf_size[1] = config.leaf_size_y;
     leaf_size[2] = config.leaf_size_z;
-  } else
+  }
+  else
   {
     NODELET_ERROR("[config_callback] completely unexpected condition happened. Values are: leaf_size_x = %f, leaf_size_y = %f, leaf_size_z = %f. Setting voxel grid size to 0.01.",  config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
     leaf_size = {0.01, 0.01, 0.01};
