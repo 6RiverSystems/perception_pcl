@@ -83,6 +83,12 @@ sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int 
             xyz_offset += cloud->point_step;
             continue;
         }
+
+        /*if (inverse_negative_points_ == true && pt[2] < 0.0)
+        {
+            pt[2] = 0.3;
+        }*/
+        
         xyz_offset += cloud->point_step;
         min_p = (min_p.min) (pt);
         max_p = (max_p.max) (pt);
@@ -166,6 +172,12 @@ sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int 
             xyz_offset += cloud->point_step;
             continue;
         }
+
+        if (pt[2] < 0.0)
+        {
+            pt[2] = 0.3;
+        }
+
         xyz_offset += cloud->point_step;
         min_p = (min_p.min) (pt);
         max_p = (max_p.max) (pt);
@@ -214,15 +226,45 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     output.row_step     = input_->row_step;
     output.is_dense     = true;                 // we filter out invalid points
 
+    Eigen::Vector4f pt  = Eigen::Vector4f::Zero ();
+
+    // Flip negative points before getMinMax()
+    if (inverse_negative_points_ == true)
+    {
+        Array4size_t xyz_offset (input_->fields[x_idx_].offset,
+                            input_->fields[y_idx_].offset,
+                            input_->fields[z_idx_].offset,
+                            0);
+        for (size_t cp = 0; cp < nr_points; ++cp)
+        {
+            // Get Z value for each point
+            pt[2] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[2]]);
+            // Check if the point is invalid
+            if (!pcl_isfinite (pt[2]))
+            {
+                xyz_offset += input_->point_step;
+                continue;
+            }
+
+            if (pt[2] < 0.0f)
+            {
+                PCL_INFO("Invert negative height point from %f to 0.3", pt[2]);
+                pt[2] = 0.3f;
+            }
+
+            xyz_offset += input_->point_step;
+        }
+    }
+
     Eigen::Vector4f min_p, max_p;
     // Get the minimum and maximum dimensions
 
     if (!filter_field_name_.empty ()) { // If we don't want to process the entire cloud...
-            getMinMax3D(input_, x_idx_, y_idx_, z_idx_, filter_field_name_,
-                        static_cast<float> (filter_limit_min_),
-                        static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
+        getMinMax3D(input_, x_idx_, y_idx_, z_idx_, filter_field_name_,
+                    static_cast<float> (filter_limit_min_),
+                    static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
     } else {
-            getMinMax3D(input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
+        getMinMax3D(input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
     }
 
     // Check that the leaf size is not too small, given the size of the data
@@ -259,7 +301,6 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
                              input_->fields[z_idx_].offset,
                              0);
     divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
-    Eigen::Vector4f pt  = Eigen::Vector4f::Zero ();
 
     int centroid_size = 4;
     int rgba_index = -1;

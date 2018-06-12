@@ -127,7 +127,7 @@ add_library(pcl_ros_filters
   src/pcl_ros/filters/voxel_grid.cpp
   src/pcl_ros/filters/crop_box.cpp
         src/pcl_ros/filters/gpu/voxel_grid.cpp
-        src/sixriver/gpu/filters/voxel_filter.cpp
+        src/sixriver/gpu/filters/voxel_grid.cpp
         src/pcl_ros/filters/gpu/radius_outlier_removal.cpp
         src/sixriver/gpu/filters/radius_outlier_removal.cpp
         src/sixriver/gpu/search/brute_force.cpp

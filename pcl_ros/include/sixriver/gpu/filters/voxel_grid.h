@@ -197,6 +197,7 @@ namespace sixriver
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
         downsample_all_data_ (true), 
         save_leaf_layout_ (false),
+        inverse_negative_points_ (false),
         leaf_layout_ (),
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
@@ -249,6 +250,14 @@ namespace sixriver
       /** \brief Get the voxel grid leaf size. */
       inline Eigen::Vector3f 
       getLeafSize () { return (leaf_size_.head<3> ()); }
+
+      /** \brief Get the flag of inverse_negative_points_. */
+      inline bool
+      getInverseNegativePoints () { return inverse_negative_points_; }
+
+      /** \brief Set the flag of inverse_negative_points_. */
+      inline void
+      setInverseNegativePoints (bool inverse_negative_points) { inverse_negative_points_ = inverse_negative_points; }
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
         * \param[in] downsample the new value (true/false)
@@ -465,6 +474,9 @@ namespace sixriver
       /** \brief Set to true if leaf layout information needs to be saved in \a leaf_layout_. */
       bool save_leaf_layout_;
 
+      /** \brief Set to true if all negative z points need to be convert to positive z. */
+      bool inverse_negative_points_;
+
       /** \brief The leaf layout information for fast access to cells relative to current position **/
       std::vector<int> leaf_layout_;
 
@@ -524,6 +536,7 @@ namespace sixriver
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
         downsample_all_data_ (true), 
         save_leaf_layout_ (false),
+        inverse_negative_points_ (false),
         leaf_layout_ (),
         min_b_ (Eigen::Vector4i::Zero ()),
         max_b_ (Eigen::Vector4i::Zero ()),
@@ -576,6 +589,14 @@ namespace sixriver
       /** \brief Get the voxel grid leaf size. */
       inline Eigen::Vector3f 
       getLeafSize () { return (leaf_size_.head<3> ()); }
+
+      /** \brief Get the flag of inverse_negative_points_. */
+      inline bool
+      getInverseNegativePoints () { return inverse_negative_points_; }
+
+      /** \brief Set the flag of inverse_negative_points_. */
+      inline void
+      setInverseNegativePoints (bool inverse_negative_points) { inverse_negative_points_ = inverse_negative_points; }
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
         * \param[in] downsample the new value (true/false)
@@ -815,6 +836,9 @@ namespace sixriver
         * leaf_layout. 
         */
       bool save_leaf_layout_;
+
+      /** \brief Set to true if all negative z points need to be convert to positive z. */
+      bool inverse_negative_points_;
 
       /** \brief The leaf layout information for fast access to cells relative
         * to current position 

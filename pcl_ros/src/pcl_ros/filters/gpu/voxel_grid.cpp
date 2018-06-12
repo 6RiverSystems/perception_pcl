@@ -76,10 +76,10 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
 
     Eigen::Vector3f leaf_size;
 
-
     if (config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0)
     {
-        NODELET_WARN("pconfig_callback] All leaf values are set. Using the leaf_size_x, leaf_size_y, leaf_size_z values.");
+        NODELET_INFO("[config_callback] All leaf values are set. Using the leaf_size_x = %f, leaf_size_y = %f, leaf_size_z values = %f.",
+            config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
         leaf_size.setConstant (0);
         leaf_size[0] = config.leaf_size_x;
         leaf_size[1] = config.leaf_size_y;
@@ -87,7 +87,8 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
     }
     else
     {
-        NODELET_ERROR("[config_callback] completely unexpected condition happened. Values are: leaf_size_y = %f, leaf_size_z = %f. Setting voxel grid size to 0.01.", config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
+        NODELET_ERROR("[config_callback] completely unexpected condition happened. Values are: leaf_size_x = %f, leaf_size_y = %f, leaf_size_z = %f. Setting voxel grid size to 0.01.",
+            config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
         leaf_size = {0.01, 0.01, 0.01};
     }
     if (leaf_size != impl_.getLeafSize())
@@ -114,6 +115,12 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
     {
         impl_.setFilterLimitsNegative (config.filter_limit_negative);
         NODELET_DEBUG ("[%s::config_callback] Setting the filter negative flag to: %s.", getName ().c_str (), config.filter_limit_negative ? "true" : "false");
+    }
+
+    if (impl_.getInverseNegativePoints () != config.inverse_negative_points)
+    {
+        impl_.setInverseNegativePoints (config.inverse_negative_points);
+        NODELET_DEBUG ("[%s::config_callback] Setting the inverse negative points flag to: %s.", getName ().c_str (), config.inverse_negative_points ? "true" : "false");
     }
 
     if (impl_.getFilterFieldName () != config.filter_field_name)
