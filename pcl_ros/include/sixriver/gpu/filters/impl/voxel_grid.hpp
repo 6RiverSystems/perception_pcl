@@ -47,7 +47,7 @@
 template <typename PointT> void
 sixriver::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                   const std::string &distance_field_name, float min_distance, float max_distance,
-                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
+                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative, bool invert_negative)
 {
     Eigen::Array4f min_p, max_p;
     min_p.setConstant (FLT_MAX);
@@ -126,7 +126,7 @@ template <typename PointT> void
 sixriver::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
                   const std::vector<int> &indices,
                   const std::string &distance_field_name, float min_distance, float max_distance,
-                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
+                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative, bool invert_negative)
 {
     Eigen::Array4f min_p, max_p;
     min_p.setConstant (FLT_MAX);
@@ -431,7 +431,7 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 }
 
 #define PCL_INSTANTIATE_VoxelGrid(T) template class PCL_EXPORTS sixriver::VoxelGrid<T>;
-#define PCL_INSTANTIATE_getMinMax3D(T) template PCL_EXPORTS void sixriver::getMinMax3D<T> (const pcl::PointCloud<T>::ConstPtr &, const std::string &, float, float, Eigen::Vector4f &, Eigen::Vector4f &, bool);
+#define PCL_INSTANTIATE_getMinMax3D(T) template PCL_EXPORTS void sixriver::getMinMax3D<T> (const pcl::PointCloud<T>::ConstPtr &, const std::string &, float, float, Eigen::Vector4f &, Eigen::Vector4f &, bool, bool);
 
 #endif    // SIXRIVER_GPU_FILTERS_IMPL_VOXEL_GRID_H_
 

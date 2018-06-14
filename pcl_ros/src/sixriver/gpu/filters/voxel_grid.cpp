@@ -49,7 +49,7 @@ using pcl::RGB;
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
+                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative, bool invert_negative)
 {
     // @todo fix this
     if (cloud->fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 ||
@@ -101,7 +101,7 @@ sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int 
 void
 sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
                   const std::string &distance_field_name, float min_distance, float max_distance,
-                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
+                  Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative, bool invert_negative)
 {
     // @todo fix this
     if (cloud->fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 ||
