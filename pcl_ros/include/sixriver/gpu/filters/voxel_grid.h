@@ -56,7 +56,7 @@ namespace sixriver
     */
   PCL_EXPORTS void 
   getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
+               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false, bool invert_negative = false);
 
   /** \brief Obtain the maximum and minimum points in 3D from a given point cloud. 
     * \note Performs internal data filtering as well.
@@ -75,7 +75,7 @@ namespace sixriver
   PCL_EXPORTS void 
   getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
                const std::string &distance_field_name, float min_distance, float max_distance, 
-               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
+               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false, bool invert_negative = false);
 
   /** \brief Get the relative cell indices of the "upper half" 13 neighbors.
     * \note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
@@ -142,7 +142,7 @@ namespace sixriver
   template <typename PointT> void 
   getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                const std::string &distance_field_name, float min_distance, float max_distance,
-               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
+               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false, bool invert_negative = false);
 
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions
     * in a given pointcloud, without considering points outside of a distance threshold from the laser origin
@@ -160,7 +160,7 @@ namespace sixriver
   getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
                const std::vector<int> &indices,
                const std::string &distance_field_name, float min_distance, float max_distance,
-               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
+               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false, bool invert_negative = false);
 
   /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *
