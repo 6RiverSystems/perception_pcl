@@ -207,6 +207,7 @@ namespace sixriver
         filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false),
         negative_point_threshold_ (0.0),
+        detect_negative_points_ (false),
         min_points_per_voxel_ (0)
       {
         filter_name_ = "VoxelGrid";
@@ -425,7 +426,25 @@ namespace sixriver
         limit_max = filter_limit_max_;
       }
 
-            /** \brief Set the negative point threshold.
+      /** \brief Set the negative point threshold.
+        * \param[in] negative_point_threshold the threshold to define a negative point
+        */
+      inline void
+      setDetectNegativePoints (const bool &detect_negative_points)
+      {
+        detect_negative_points_ = detect_negative_points;
+      }
+
+      /** \brief Get the negative point threshold set by the user. The default valueis.
+        * \param[out] negative_point_threshold the threshold to define a negative point
+        */
+      inline void
+      getDetectNegativePoints (bool &detect_negative_points)
+      {
+        detect_negative_points = detect_negative_points_;
+      }
+
+      /** \brief Set the negative point threshold.
         * \param[in] negative_point_threshold the threshold to define a negative point
         */
       inline void
@@ -502,6 +521,8 @@ namespace sixriver
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
 
+      bool detect_negative_points_;
+
       /** \brief The height threshold to define a point as negative point */
       double negative_point_threshold_;
 
@@ -555,6 +576,7 @@ namespace sixriver
         filter_limit_min_ (-FLT_MAX), 
         filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false),
+        detect_negative_points_ (false),
         negative_point_threshold_ (0.0),
         min_points_per_voxel_ (0)
       {
@@ -800,6 +822,24 @@ namespace sixriver
         * \param[in] negative_point_threshold the threshold to define a negative point
         */
       inline void
+      setDetectNegativePoints (const bool &detect_negative_points)
+      {
+        detect_negative_points_ = detect_negative_points;
+      }
+
+      /** \brief Get the negative point threshold set by the user. The default valueis.
+        * \param[out] negative_point_threshold the threshold to define a negative point
+        */
+      inline void
+      getDetectNegativePoints (bool &detect_negative_points)
+      {
+        detect_negative_points = detect_negative_points_;
+      }
+
+      /** \brief Set the negative point threshold.
+        * \param[in] negative_point_threshold the threshold to define a negative point
+        */
+      inline void
       setNegativePointThreshold (const double &negative_point_threshold)
       {
         negative_point_threshold_ = negative_point_threshold;
@@ -878,6 +918,8 @@ namespace sixriver
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
+
+      bool detect_negative_points_;
 
       /** \brief The height threshold to define a point as negative point */
       double negative_point_threshold_;

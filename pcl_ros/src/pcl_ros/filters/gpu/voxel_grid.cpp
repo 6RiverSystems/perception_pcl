@@ -109,13 +109,26 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
     }
     impl_.setFilterLimits (filter_min, filter_max);
 
+    bool detect_negative_points;
+    impl_.getDetectNegativePoints (detect_negative_points);
+    NODELET_INFO ("detect_negative_points: %d, config: %d", detect_negative_points, config.detect_negative_points);
+    if (detect_negative_points != config.detect_negative_points)
+    {
+        detect_negative_points = config.detect_negative_points;
+        NODELET_INFO ("[config_callback] Setting the detect negative points value to: %d.", detect_negative_points);
+    }
+    NODELET_INFO ("Setting flag to %f", detect_negative_points);
+    impl_.setDetectNegativePoints (detect_negative_points);
+
     double negative_point_threshold;
     impl_.getNegativePointThreshold (negative_point_threshold);
+    NODELET_INFO ("negative_point_threshold: %f, config: %f", negative_point_threshold, config.negative_point_threshold);
     if (negative_point_threshold != config.negative_point_threshold)
     {
         negative_point_threshold = config.negative_point_threshold;
-        NODELET_DEBUG ("[config_callback] Setting the negative point threshold value to: %f.", negative_point_threshold);
+        NODELET_INFO ("[config_callback] Setting the negative point threshold value to: %f.", negative_point_threshold);
     }
+    NODELET_INFO ("Setting threshold to %f", negative_point_threshold);
     impl_.setNegativePointThreshold (negative_point_threshold);
 
     if (impl_.getFilterLimitsNegative () != config.filter_limit_negative)

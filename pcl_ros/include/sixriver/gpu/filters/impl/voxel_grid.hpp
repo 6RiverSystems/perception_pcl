@@ -292,7 +292,7 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
             float distance_value = 0;
             distance_value = *reinterpret_cast<const float *>(pt_data + fields[distance_idx].offset);
 
-            if (input_->points[*it].z < negative_point_threshold_)
+            if (detect_negative_points_ && input_->points[*it].z < negative_point_threshold_)
             {
                 number_of_negative_points++;
             }
@@ -318,9 +318,9 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
             int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
             index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
         }
-        if (number_of_negative_points > 0)
+        if (detect_negative_points_ && number_of_negative_points > 0)
         {
-            PCL_WARN("Detecting %u point(s) below threshold", number_of_negative_points);
+            PCL_INFO("Detecting %u point(s) below threshold", number_of_negative_points);
         }
     }
         // No distance filtering, process all data
@@ -340,7 +340,7 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
                     !pcl_isfinite (input_->points[*it].z))
                     continue;
 
-            if (input_->points[*it].z < negative_point_threshold_)
+            if (detect_negative_points_ && input_->points[*it].z < negative_point_threshold_)
             {
                 number_of_negative_points++;
             }
@@ -353,9 +353,9 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
             int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
             index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
         }
-        if (number_of_negative_points > 0)
+        if (detect_negative_points_ && number_of_negative_points > 0)
         {
-            PCL_WARN("Detecting %u point(s) below threshold", number_of_negative_points);
+            PCL_INFO("Detecting %u point(s) below threshold", number_of_negative_points);
         }
     }
 
