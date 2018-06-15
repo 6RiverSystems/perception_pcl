@@ -206,6 +206,7 @@ namespace sixriver
         filter_limit_min_ (-FLT_MAX), 
         filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false),
+        negative_point_threshold_ (0.0),
         min_points_per_voxel_ (0)
       {
         filter_name_ = "VoxelGrid";
@@ -424,6 +425,24 @@ namespace sixriver
         limit_max = filter_limit_max_;
       }
 
+            /** \brief Set the negative point threshold.
+        * \param[in] negative_point_threshold the threshold to define a negative point
+        */
+      inline void
+      setNegativePointThreshold (const double &negative_point_threshold)
+      {
+        negative_point_threshold_ = negative_point_threshold;
+      }
+
+      /** \brief Get the negative point threshold set by the user. The default valueis.
+        * \param[out] negative_point_threshold the threshold to define a negative point
+        */
+      inline void
+      getNegativePointThreshold (double &negative_point_threshold)
+      {
+        negative_point_threshold = negative_point_threshold_;
+      }
+
       /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max).
         * Default: false.
         * \param[in] limit_negative return data inside the interval (false) or outside (true)
@@ -483,6 +502,9 @@ namespace sixriver
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
 
+      /** \brief The height threshold to define a point as negative point */
+      double negative_point_threshold_;
+
       /** \brief Minimum number of points per voxel for the centroid to be computed */
       unsigned int min_points_per_voxel_;
 
@@ -533,6 +555,7 @@ namespace sixriver
         filter_limit_min_ (-FLT_MAX), 
         filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false),
+        negative_point_threshold_ (0.0),
         min_points_per_voxel_ (0)
       {
         filter_name_ = "VoxelGrid";
@@ -595,10 +618,10 @@ namespace sixriver
       inline void 
       setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
 
-	  /** \brief Return the minimum number of points required for a voxel to be used.
+	    /** \brief Return the minimum number of points required for a voxel to be used.
        */
-	  inline unsigned int
-	  getMinimumPointsNumberPerVoxel () { return min_points_per_voxel_; }
+	    inline unsigned int
+	    getMinimumPointsNumberPerVoxel () { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
@@ -773,6 +796,24 @@ namespace sixriver
         limit_max = filter_limit_max_;
       }
 
+      /** \brief Set the negative point threshold.
+        * \param[in] negative_point_threshold the threshold to define a negative point
+        */
+      inline void
+      setNegativePointThreshold (const double &negative_point_threshold)
+      {
+        negative_point_threshold_ = negative_point_threshold;
+      }
+
+      /** \brief Get the negative point threshold set by the user. The default valueis.
+        * \param[out] negative_point_threshold the threshold to define a negative point
+        */
+      inline void
+      getNegativePointThreshold (double &negative_point_threshold)
+      {
+        negative_point_threshold = negative_point_threshold_;
+      }
+
       /** \brief Set to true if we want to return the data outside the interval specified by setFilterLimits (min, max).
         * Default: false.
         * \param[in] limit_negative return data inside the interval (false) or outside (true)
@@ -837,6 +878,9 @@ namespace sixriver
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
+
+      /** \brief The height threshold to define a point as negative point */
+      double negative_point_threshold_;
 
       /** \brief Minimum number of points per voxel for the centroid to be computed */
       unsigned int min_points_per_voxel_;

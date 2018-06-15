@@ -76,7 +76,6 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
 
     Eigen::Vector3f leaf_size;
 
-
     if (config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0)
     {
         NODELET_INFO("[config_callback] All leaf values are set. Using the leaf_size_x, leaf_size_y, leaf_size_z values.");
@@ -109,6 +108,15 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
         NODELET_DEBUG ("[config_callback] Setting the maximum filtering value a point will be considered from to: %f.", filter_max);
     }
     impl_.setFilterLimits (filter_min, filter_max);
+
+    double negative_point_threshold;
+    impl_.getNegativePointThreshold (negative_point_threshold);
+    if (negative_point_threshold != config.negative_point_threshold)
+    {
+        negative_point_threshold = config.negative_point_threshold;
+        NODELET_DEBUG ("[config_callback] Setting the negative point threshold value to: %f.", negative_point_threshold);
+    }
+    impl_.setNegativePointThreshold (negative_point_threshold);
 
     if (impl_.getFilterLimitsNegative () != config.filter_limit_negative)
     {
