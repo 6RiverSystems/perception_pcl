@@ -40,6 +40,7 @@
 
 #include <iostream>
 #include <pcl/common/io.h>
+#include <ros/ros.h>
 #include <sixriver/gpu/filters/impl/voxel_grid.hpp>
 
 typedef Eigen::Array<size_t, 4, 1> Array4size_t;
@@ -218,11 +219,11 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     // Get the minimum and maximum dimensions
 
     if (!filter_field_name_.empty ()) { // If we don't want to process the entire cloud...
-            getMinMax3D(input_, x_idx_, y_idx_, z_idx_, filter_field_name_,
-                        static_cast<float> (filter_limit_min_),
-                        static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
+        getMinMax3D(input_, x_idx_, y_idx_, z_idx_, filter_field_name_,
+                    static_cast<float> (filter_limit_min_),
+                    static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
     } else {
-            getMinMax3D(input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
+        getMinMax3D(input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
     }
 
     // Check that the leaf size is not too small, given the size of the data
@@ -300,9 +301,32 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         // with calculated idx. Points with the same idx value will contribute to the
         // same point of resulting CloudPoint
         float distance_value = 0;
+
+        size_t number_of_negative_points = 0;
+
         for (size_t cp = 0; cp < nr_points; ++cp)
         {
             size_t point_offset = cp * input_->point_step;
+
+            // Unoptimized memcpys: assume fields x, y, z are in random order
+            pt[0] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[0]]);
+            pt[1] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[1]]);
+            pt[2] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[2]]);
+
+            // Check if the point is invalid
+            if (!pcl_isfinite (pt[0]) ||
+                !pcl_isfinite (pt[1]) ||
+                !pcl_isfinite (pt[2]))
+            {
+                xyz_offset += input_->point_step;
+                continue;
+            }
+
+            if (detect_negative_points_ && pt[2] < negative_point_height_threshold_)
+            {
+                number_of_negative_points++;
+            }
+
             // Get the distance value
             distance_value = *reinterpret_cast<const float *>(&input_->data[point_offset + input_->fields[distance_idx].offset]);
 
@@ -325,20 +349,6 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
                 }
             }
 
-            // Unoptimized memcpys: assume fields x, y, z are in random order
-            pt[0] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[0]]);
-            pt[1] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[1]]);
-            pt[2] = *reinterpret_cast<const float *>(&input_->data[xyz_offset[2]]);
-
-            // Check if the point is invalid
-            if (!pcl_isfinite (pt[0]) ||
-                !pcl_isfinite (pt[1]) ||
-                !pcl_isfinite (pt[2]))
-            {
-                xyz_offset += input_->point_step;
-                continue;
-            }
-
             int ijk0 = static_cast<int> (floor (pt[0] * inverse_leaf_size_[0]) - min_b_[0]);
             int ijk1 = static_cast<int> (floor (pt[1] * inverse_leaf_size_[1]) - min_b_[1]);
             int ijk2 = static_cast<int> (floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
@@ -348,10 +358,18 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
             xyz_offset += input_->point_step;
         }
+
+        // Log WARN message if negative points detected
+        if (detect_negative_points_ && (number_of_negative_points > negative_point_number_threshold_))
+        {
+            ROS_WARN_THROTTLE(3.0, "Detecting %u point(s) below height threshold", number_of_negative_points);
+        }
     }
         // No distance filtering, process all data
     else
     {
+        size_t number_of_negative_points = 0;
+
         // First pass: go over all points and insert them into the right leaf
         for (size_t cp = 0; cp < nr_points; ++cp)
         {
@@ -369,6 +387,11 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
                 continue;
             }
 
+            if (detect_negative_points_ && pt[2] < negative_point_height_threshold_)
+            {
+                number_of_negative_points++;
+            }
+
             int ijk0 = static_cast<int> (floor (pt[0] * inverse_leaf_size_[0]) - min_b_[0]);
             int ijk1 = static_cast<int> (floor (pt[1] * inverse_leaf_size_[1]) - min_b_[1]);
             int ijk2 = static_cast<int> (floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
@@ -376,6 +399,12 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
             index_vector.push_back (cloud_point_index_idx (idx, static_cast<unsigned int> (cp)));
             xyz_offset += input_->point_step;
+        }
+
+        // Log WARN message if negative points detected
+        if (detect_negative_points_ && (number_of_negative_points > negative_point_number_threshold_))
+        {
+            ROS_WARN_THROTTLE(3.0, "Detecting %u point(s) below height threshold", number_of_negative_points);
         }
     }
 
