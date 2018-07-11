@@ -76,10 +76,10 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
 
     Eigen::Vector3f leaf_size;
 
-
     if (config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0)
     {
-        NODELET_WARN("pconfig_callback] All leaf values are set. Using the leaf_size_x, leaf_size_y, leaf_size_z values.");
+        NODELET_INFO("[config_callback] All leaf values are set. Using the leaf_size_x: %f, leaf_size_y: %f, leaf_size_z: %f.",
+            config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
         leaf_size.setConstant (0);
         leaf_size[0] = config.leaf_size_x;
         leaf_size[1] = config.leaf_size_y;
@@ -87,7 +87,7 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
     }
     else
     {
-        NODELET_ERROR("[config_callback] completely unexpected condition happened. Values are: leaf_size_y = %f, leaf_size_z = %f. Setting voxel grid size to 0.01.", config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
+        NODELET_ERROR("[config_callback] completely unexpected condition happened. Values are: leaf_size_x = %f, leaf_size_y = %f, leaf_size_z = %f. Setting voxel grid size to 0.01.", config.leaf_size_x, config.leaf_size_y, config.leaf_size_z);
         leaf_size = {0.01, 0.01, 0.01};
     }
     if (leaf_size != impl_.getLeafSize())
@@ -109,6 +109,33 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
         NODELET_DEBUG ("[config_callback] Setting the maximum filtering value a point will be considered from to: %f.", filter_max);
     }
     impl_.setFilterLimits (filter_min, filter_max);
+
+    bool detect_negative_points;
+    impl_.getDetectNegativePoints (detect_negative_points);
+    if (detect_negative_points != config.detect_negative_points)
+    {
+        detect_negative_points = config.detect_negative_points;
+        NODELET_INFO ("[config_callback] Setting the flag of detect_negative_points to: %d.", detect_negative_points);
+    }
+    impl_.setDetectNegativePoints (detect_negative_points);
+
+    double negative_point_height_threshold;
+    impl_.getNegativePointHeightThreshold (negative_point_height_threshold);
+    if (negative_point_height_threshold != config.negative_point_height_threshold)
+    {
+        negative_point_height_threshold = config.negative_point_height_threshold;
+        NODELET_INFO ("[config_callback] Setting the negative point height threshold to: %f.", negative_point_height_threshold);
+    }
+    impl_.setNegativePointHeightThreshold (negative_point_height_threshold);
+
+    int negative_point_number_threshold;
+    impl_.getNegativePointNumberThreshold (negative_point_number_threshold);
+    if (negative_point_number_threshold != config.negative_point_number_threshold)
+    {
+        negative_point_number_threshold = config.negative_point_number_threshold;
+        NODELET_INFO ("[config_callback] Setting the negative point number threshold to: %d.", negative_point_number_threshold);
+    }
+    impl_.setNegativePointNumberThreshold (negative_point_number_threshold);
 
     if (impl_.getFilterLimitsNegative () != config.filter_limit_negative)
     {

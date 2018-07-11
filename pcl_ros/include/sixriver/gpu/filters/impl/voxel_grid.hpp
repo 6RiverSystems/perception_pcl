@@ -273,6 +273,8 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         if (distance_idx == -1)
             PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
 
+        size_t number_of_negative_points = 0;
+
         // First pass: go over all points and insert them into the index_vector vector
         // with calculated idx. Points with the same idx value will contribute to the
         // same point of resulting CloudPoint
@@ -289,6 +291,11 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
             const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[*it]);
             float distance_value = 0;
             distance_value = *reinterpret_cast<const float *>(pt_data + fields[distance_idx].offset);
+
+            if (detect_negative_points_ && input_->points[*it].z < negative_point_height_threshold_)
+            {
+                number_of_negative_points++;
+            }
 
             if (filter_limit_negative_)
             {
@@ -311,10 +318,16 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
             int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
             index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
         }
+        if (detect_negative_points_ && (number_of_negative_points > negative_point_number_threshold_))
+        {
+            ROS_WARN("Detecting %u point(s) below height threshold", number_of_negative_points);
+        }
     }
         // No distance filtering, process all data
     else
     {
+        size_t number_of_negative_points = 0;
+
         // First pass: go over all points and insert them into the index_vector vector
         // with calculated idx. Points with the same idx value will contribute to the
         // same point of resulting CloudPoint
@@ -327,6 +340,11 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
                     !pcl_isfinite (input_->points[*it].z))
                     continue;
 
+            if (detect_negative_points_ && input_->points[*it].z < negative_point_height_threshold_)
+            {
+                number_of_negative_points++;
+            }
+
             int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
             int ijk1 = static_cast<int> (floor (input_->points[*it].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
             int ijk2 = static_cast<int> (floor (input_->points[*it].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
@@ -334,6 +352,12 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
             // Compute the centroid leaf index
             int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
             index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
+        }
+
+        // Log WARN message if negative points detected
+        if (detect_negative_points_ && (number_of_negative_points > negative_point_number_threshold_))
+        {
+            ROS_WARN("Detecting %u point(s) below height threshold", number_of_negative_points);
         }
     }
 
