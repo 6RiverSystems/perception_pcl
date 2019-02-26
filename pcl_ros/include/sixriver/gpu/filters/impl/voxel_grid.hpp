@@ -320,7 +320,7 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         }
         if (detect_negative_points_ && (number_of_negative_points > negative_point_number_threshold_))
         {
-            ROS_WARN("Detecting %u point(s) below height threshold", number_of_negative_points);
+            ROS_WARN("Detecting %zu point(s) below height threshold", number_of_negative_points);
         }
     }
         // No distance filtering, process all data
@@ -357,7 +357,7 @@ sixriver::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         // Log WARN message if negative points detected
         if (detect_negative_points_ && (number_of_negative_points > negative_point_number_threshold_))
         {
-            ROS_WARN("Detecting %u point(s) below height threshold", number_of_negative_points);
+            ROS_WARN("Detecting %zu point(s) below height threshold", number_of_negative_points);
         }
     }
 
