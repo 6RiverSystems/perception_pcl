@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/features/fpfh_omp.h"
 
 void 
@@ -72,5 +72,5 @@ pcl_ros::FPFHEstimationOMP::computePublish (const PointCloudInConstPtr &cloud,
 }
 
 typedef pcl_ros::FPFHEstimationOMP FPFHEstimationOMP;
-PLUGINLIB_DECLARE_CLASS (pcl, FPFHEstimationOMP, FPFHEstimationOMP, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (FPFHEstimationOMP, nodelet::Nodelet);
 

@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include <pcl/io/io.h>
 #include <pcl/PointIndices.h>
 #include "pcl_ros/segmentation/extract_clusters.h"
@@ -228,5 +228,5 @@ pcl_ros::EuclideanClusterExtraction::input_indices_callback (
 }
 
 typedef pcl_ros::EuclideanClusterExtraction EuclideanClusterExtraction;
-PLUGINLIB_DECLARE_CLASS (pcl, EuclideanClusterExtraction, EuclideanClusterExtraction, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (EuclideanClusterExtraction, nodelet::Nodelet);
 

@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/transforms.h"
 #include "pcl_ros/segmentation/extract_polygonal_prism_data.h"
 #include <pcl/io/io.h>
@@ -198,5 +198,5 @@ pcl_ros::ExtractPolygonalPrismData::input_hull_indices_callback (
 }
 
 typedef pcl_ros::ExtractPolygonalPrismData ExtractPolygonalPrismData;
-PLUGINLIB_DECLARE_CLASS (pcl, ExtractPolygonalPrismData, ExtractPolygonalPrismData, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (ExtractPolygonalPrismData, nodelet::Nodelet);
 

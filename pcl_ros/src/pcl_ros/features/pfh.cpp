@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/features/pfh.h"
 
 void 
@@ -72,5 +72,5 @@ pcl_ros::PFHEstimation::computePublish (const PointCloudInConstPtr &cloud,
 }
 
 typedef pcl_ros::PFHEstimation PFHEstimation;
-PLUGINLIB_DECLARE_CLASS (pcl, PFHEstimation, PFHEstimation, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (PFHEstimation, nodelet::Nodelet);
 

@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/segmentation/segment_differences.h"
 #include <pcl/io/io.h>
 
@@ -124,5 +124,5 @@ pcl_ros::SegmentDifferences::input_target_callback (const PointCloudConstPtr &cl
 }
 
 typedef pcl_ros::SegmentDifferences SegmentDifferences;
-PLUGINLIB_DECLARE_CLASS (pcl, SegmentDifferences, SegmentDifferences, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (SegmentDifferences, nodelet::Nodelet);
 

@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/features/moment_invariants.h"
 
 void 
@@ -70,5 +70,5 @@ pcl_ros::MomentInvariantsEstimation::computePublish (const PointCloudInConstPtr 
 }
 
 typedef pcl_ros::MomentInvariantsEstimation MomentInvariantsEstimation;
-PLUGINLIB_DECLARE_CLASS (pcl, MomentInvariantsEstimation, MomentInvariantsEstimation, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (MomentInvariantsEstimation, nodelet::Nodelet);
 

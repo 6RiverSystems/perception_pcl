@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include <pcl/common/io.h>
 #include "pcl_ros/surface/convex_hull.h"
 #include <geometry_msgs/PolygonStamped.h>
@@ -178,5 +178,5 @@ void
 }
 
 typedef pcl_ros::ConvexHull2D ConvexHull2D;
-PLUGINLIB_DECLARE_CLASS (pcl, ConvexHull2D, ConvexHull2D, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (ConvexHull2D, nodelet::Nodelet);
 

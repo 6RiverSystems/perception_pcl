@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/features/normal_3d_omp.h"
 
 void 
@@ -70,5 +70,5 @@ pcl_ros::NormalEstimationOMP::computePublish (const PointCloudInConstPtr &cloud,
 }
 
 typedef pcl_ros::NormalEstimationOMP NormalEstimationOMP;
-PLUGINLIB_DECLARE_CLASS (pcl, NormalEstimationOMP, NormalEstimationOMP, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (NormalEstimationOMP, nodelet::Nodelet);
 

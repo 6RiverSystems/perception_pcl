@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/features/vfh.h"
 
 void 
@@ -72,5 +72,5 @@ pcl_ros::VFHEstimation::computePublish (const PointCloudInConstPtr &cloud,
 }
 
 typedef pcl_ros::VFHEstimation VFHEstimation;
-PLUGINLIB_DECLARE_CLASS (pcl, VFHEstimation, VFHEstimation, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (VFHEstimation, nodelet::Nodelet);
 

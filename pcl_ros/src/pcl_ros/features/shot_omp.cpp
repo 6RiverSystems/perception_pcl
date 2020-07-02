@@ -34,7 +34,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/features/shot_omp.h"
 
 void 
@@ -71,5 +71,5 @@ pcl_ros::SHOTEstimationOMP::computePublish (const PointCloudInConstPtr &cloud,
 }
 
 typedef pcl_ros::SHOTEstimationOMP SHOTEstimationOMP;
-PLUGINLIB_DECLARE_CLASS (pcl, SHOTEstimationOMP, SHOTEstimationOMP, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (SHOTEstimationOMP, nodelet::Nodelet);
 

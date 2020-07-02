@@ -35,7 +35,7 @@
  *
  */
 
-#include <pluginlib/class_list_macros.h>
+#include <pluginlib/class_list_macros.hpp>
 #include "pcl_ros/surface/moving_least_squares.h"
 #include <pcl/io/io.h>
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,4 +211,4 @@ pcl_ros::MovingLeastSquares::config_callback (MLSConfig &config, uint32_t level)
 }
 
 typedef pcl_ros::MovingLeastSquares MovingLeastSquares;
-PLUGINLIB_DECLARE_CLASS (pcl, MovingLeastSquares, MovingLeastSquares, nodelet::Nodelet);
+PLUGINLIB_EXPORT_CLASS (MovingLeastSquares, nodelet::Nodelet);
