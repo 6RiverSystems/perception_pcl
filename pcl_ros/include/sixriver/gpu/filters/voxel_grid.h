@@ -43,9 +43,19 @@
 #include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
 #include <map>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/median.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/density.hpp>
+#include <chrono>
 
 namespace sixriver
 {
+    using namespace boost;
+    using namespace boost::accumulators;
+    typedef iterator_range<std::vector<std::pair<double, double> >::iterator > histogram_type;
+
   /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
     * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
     * \param[in] x_idx the index of the X channel
@@ -177,7 +187,8 @@ namespace sixriver
   template <typename PointT>
   class VoxelGrid: public pcl::Filter<PointT>
   {
-    protected:
+      std::string cameraName_;
+  protected:
       using pcl::Filter<PointT>::filter_name_;
       using pcl::Filter<PointT>::getClassName;
       using pcl::Filter<PointT>::input_;
@@ -188,7 +199,11 @@ namespace sixriver
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
       typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
       typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
- 
+
+      std::shared_ptr<accumulator_set<double, stats<tag::density> > > queueWaitingTimeHistogram_;
+      std::shared_ptr<accumulator_set<double, stats<tag::density> > > totalCompletionTimeHistogram_;
+      std::shared_ptr<accumulator_set<double, stats<tag::mean, tag::median, tag::min, tag::max> > > totalCompletionTimeStats_;
+      std::shared_ptr<accumulator_set<double, stats<tag::mean, tag::median, tag::min, tag::max> > > queueWaitingTimeStats_;
 
     public:
       /** \brief Empty constructor. */
@@ -209,9 +224,20 @@ namespace sixriver
         negative_point_height_threshold_ (0.0),
         negative_point_number_threshold_ (0),
         detect_negative_points_ (false),
-        min_points_per_voxel_ (0)
+        min_points_per_voxel_ (0),
+        cameraName_("Undefined")
       {
         filter_name_ = "VoxelGrid";
+        // Setup histogram
+        queueWaitingTimeHistogram_.reset(new accumulator_set<double, stats<tag::density> >(tag::density::num_bins = 20, tag::density::cache_size = 2));
+        (*queueWaitingTimeHistogram_)(0);
+        (*queueWaitingTimeHistogram_)(0.2);
+        totalCompletionTimeHistogram_.reset(new accumulator_set<double, stats<tag::density> >(tag::density::num_bins = 20, tag::density::cache_size = 2));
+        (*totalCompletionTimeHistogram_)(0);
+        (*totalCompletionTimeHistogram_)(0.2);
+        totalCompletionTimeStats_.reset(new accumulator_set<double, stats<tag::mean, tag::median, tag::min, tag::max> >());
+        queueWaitingTimeStats_.reset(new accumulator_set<double, stats<tag::mean, tag::median, tag::min, tag::max> >());
+
       }
 
       /** \brief Destructor. */
@@ -309,6 +335,8 @@ namespace sixriver
         */
       inline Eigen::Vector3i 
       getDivisionMultiplier () { return (divb_mul_.head<3> ()); }
+
+      inline void setCameraName(const std::string &camera_name) { cameraName_ = camera_name;};
 
       /** \brief Returns the index in the resulting downsampled cloud of the specified point.
         *
@@ -559,6 +587,9 @@ namespace sixriver
         */
       void 
       applyFilter (PointCloud &output);
+
+      void generateStatistics(const std::chrono::steady_clock::time_point &callback_entry, const double message_queue_delay);
+      std::string generateHistogramOutput(const histogram_type &hist);
   };
 
   /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
@@ -583,6 +614,13 @@ namespace sixriver
     typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
     typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
+    std::string cameraName_;
+
+    std::shared_ptr<accumulator_set<double, stats<tag::density> > > queueWaitingTimeHistogram_;
+    std::shared_ptr<accumulator_set<double, stats<tag::density> > > totalCompletionTimeHistogram_;
+    std::shared_ptr<accumulator_set<double, stats<tag::mean, tag::median, tag::min, tag::max> > > totalCompletionTimeStats_;
+    std::shared_ptr<accumulator_set<double, stats<tag::mean, tag::median, tag::min, tag::max> > > queueWaitingTimeStats_;
+
     public:
       /** \brief Empty constructor. */
       VoxelGrid () : 
@@ -602,15 +640,28 @@ namespace sixriver
         detect_negative_points_ (false),
         negative_point_height_threshold_ (0.0),
         negative_point_number_threshold_ (0),
-        min_points_per_voxel_ (0)
+        min_points_per_voxel_ (0),
+        cameraName_("Undefined")
       {
         filter_name_ = "VoxelGrid";
+        // Setup histogram
+        queueWaitingTimeHistogram_.reset(new accumulator_set<double, stats<tag::density> >(tag::density::num_bins = 20, tag::density::cache_size = 2));
+        (*queueWaitingTimeHistogram_)(0);
+        (*queueWaitingTimeHistogram_)(0.2);
+        totalCompletionTimeHistogram_.reset(new accumulator_set<double, stats<tag::density> >(tag::density::num_bins = 20, tag::density::cache_size = 2));
+        (*totalCompletionTimeHistogram_)(0);
+        (*totalCompletionTimeHistogram_)(0.2);
+        totalCompletionTimeStats_.reset(new accumulator_set<double, stats<tag::mean, tag::median, tag::min, tag::max> >());
+        queueWaitingTimeStats_.reset(new accumulator_set<double, stats<tag::mean, tag::median, tag::min, tag::max> >());
       }
 
       /** \brief Destructor. */
       virtual ~VoxelGrid ()
       {
       }
+
+      inline void setCameraName(const std::string &camera_name) { cameraName_ = camera_name;};
+
 
       /** \brief Set the voxel grid leaf size.
         * \param[in] leaf_size the voxel grid leaf size
@@ -978,6 +1029,10 @@ namespace sixriver
         */
       void 
       applyFilter (PCLPointCloud2 &output);
+      void generateStatistics(const std::chrono::steady_clock::time_point &callback_entry, const double message_queue_delay);
+      std::string generateHistogramOutput(const histogram_type &hist);
+
+
   };
 }
 

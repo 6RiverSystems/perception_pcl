@@ -175,16 +175,82 @@ sixriver::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int 
     max_pt = max_p;
 }
 
+
+
+void
+sixriver::VoxelGrid<pcl::PCLPointCloud2>::generateStatistics(const std::chrono::steady_clock::time_point &callback_entry, const double message_queue_delay)
+{
+    using std::chrono::steady_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+
+    steady_clock::time_point callback_done = steady_clock::now();
+    duration<double> total_callback_time = duration_cast < duration < double > > (callback_done - callback_entry);
+
+    (*queueWaitingTimeHistogram_)(message_queue_delay);
+    (*totalCompletionTimeHistogram_)(total_callback_time.count() + message_queue_delay);
+
+    (*totalCompletionTimeStats_)(total_callback_time.count() + message_queue_delay);
+    (*queueWaitingTimeStats_)(message_queue_delay);
+
+    auto q_hist = density(*queueWaitingTimeHistogram_);
+    auto t_hist = density(*totalCompletionTimeHistogram_);
+
+    ROS_WARN_STREAM_THROTTLE(5, "[" << cameraName_ << "] " << "Queue waiting time histogram:       "
+                                    << generateHistogramOutput(q_hist));
+    ROS_WARN_STREAM_THROTTLE(5, "[" << cameraName_ << "] " << "Total completion time histogram:    "
+                                    << generateHistogramOutput(t_hist));
+    ROS_WARN_STREAM_THROTTLE(5, "[" << cameraName_ << "] " << "Mean / median / min/ max values for pipeline so far: "
+                                    << std::fixed << std::setprecision(5) << std::endl
+                                    << "Total completion time:    " << mean(*totalCompletionTimeStats_) << " / "
+                                    << median(*totalCompletionTimeStats_) << " / "
+                                    << min(*totalCompletionTimeStats_) << " / " << max(*totalCompletionTimeStats_)
+                                    << std::endl
+                                    << "Queue waiting time:       " << mean(*queueWaitingTimeStats_) << " / "
+                                    << median(*queueWaitingTimeStats_) << " / "
+                                    << min(*queueWaitingTimeStats_) << " / " << max(*queueWaitingTimeStats_)
+                                    << std::endl);
+}
+
+std::string sixriver::VoxelGrid<pcl::PCLPointCloud2>::generateHistogramOutput(const histogram_type &hist)
+{
+    std::stringstream hist_str;
+    hist_str << std::endl;
+    hist_str << std::fixed << std::setprecision(2);
+
+    for (auto &&entry : hist)
+    {
+        // don't print out data if no data point is presented
+        if (entry.second == 0.0)
+        {
+            continue;
+        }
+
+        float perceptage = entry.second * 100;
+        hist_str << "Bin lower bound: " << entry.first<< ", Value: " << perceptage << " %" << std::endl;
+    }
+    return hist_str.str();
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
+    using std::chrono::steady_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    ros::Time stamp_time;
+    pcl_conversions::fromPCL(input_->header.stamp, stamp_time);
+    double message_queue_delay = (ros::Time::now() - stamp_time).toSec();
+    steady_clock::time_point callback_entry = steady_clock::now();
+
     // If fields x/y/z are not present, we cannot downsample
     if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
     {
         PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
         output.width = output.height = 0;
         output.data.clear ();
+        generateStatistics(callback_entry, message_queue_delay);
         return;
     }
     size_t nr_points  = input_->width * input_->height;
@@ -294,6 +360,7 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
             PCL_ERROR ("[pcl::%s::applyFilter] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.\n", getClassName ().c_str ());
             output.width = output.height = 0;
             output.data.clear ();
+            generateStatistics(callback_entry, message_queue_delay);
             return;
         }
 
@@ -572,6 +639,7 @@ sixriver::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         cp = i;
         ++index;
     }
+    generateStatistics(callback_entry, message_queue_delay);
 }
 
 #ifndef PCL_NO_PRECOMPILE

@@ -76,6 +76,12 @@ pcl_ros::gpu::VoxelGrid::config_callback (pcl_ros::VoxelGridConfig &config, uint
 
     Eigen::Vector3f leaf_size;
 
+    std::string camera_name(config.camera_name);
+    if (!camera_name.empty())
+    {
+        impl_.setCameraName(camera_name);
+    }
+
     if (config.leaf_size_x > 0 && config.leaf_size_y > 0 && config.leaf_size_z > 0)
     {
         NODELET_INFO("[config_callback] All leaf values are set. Using the leaf_size_x: %f, leaf_size_y: %f, leaf_size_z: %f.",
